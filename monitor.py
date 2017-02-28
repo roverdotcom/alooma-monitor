@@ -7,12 +7,13 @@ import time
 ALOOMA_USERNAME = os.environ.get('ALOOMA_USERNAME')
 ALOOMA_PASSWORD = os.environ.get('ALOOMA_PASSWORD')
 DATADOG_API_KEY = os.environ.get('DATADOG_API_KEY')
-MINUTES_SLEEP = 3
+MINUTES_SLEEP = 10
 SECONDS_SLEEP = MINUTES_SLEEP * 60
 
 
 api = alooma.Alooma(
-    hostname="rover.alooma.io",
+    hostname='app.alooma.com',
+    port=443,
     username=ALOOMA_USERNAME,
     password=ALOOMA_PASSWORD,
 )
