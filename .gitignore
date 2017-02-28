@@ -1,0 +1,4 @@
+local.config
+docker-compose.yml
+tutum-stack.yml
+/tmp
