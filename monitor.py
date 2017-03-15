@@ -36,7 +36,10 @@ def send_metric(data):
 
         for v in values:
             v[0] = str(v[0])
-            v[1] = float(0 if v[1] is None else v[1])
+            if v[1] is None:
+                print "Value is None. Not sending."
+                continue
+            v[1] = float(v[1])
 
         values = [tuple(x) for x in values]
 
@@ -59,15 +62,19 @@ metrics.remove('MEMORY_CONSUMED')
 metrics.remove('MEMORY_LEFT')
 
 
-while True:
+def record_metric(m):
+    data = api.get_metrics_by_names(m, MINUTES_SLEEP)
+    print "Sending {}".format(m)
+    result = send_metric(data)
+
+    for r in result:
+        import pprint; pprint.pprint(r)
+
+def record_all_metrics():
     for m in metrics:
-        data = api.get_metrics_by_names(m, MINUTES_SLEEP)
-        print "Sending {}".format(m)
-        result = send_metric(data)
+        record_metric(m)
 
-        for r in result:
-            import pprint; pprint.pprint(r)
-
+def record_num_inputs():
     inputs = api.get_inputs()
     num_inputs = len(inputs)
     result = datadog.api.Metric.send(
@@ -76,5 +83,14 @@ while True:
         type='gauge',
     )
 
-    print "Sleeping for {}m".format(MINUTES_SLEEP)
-    time.sleep(SECONDS_SLEEP)
+
+if __name__ == '__main__':
+    while True:
+        try:
+            record_all_metrics()
+            record_num_inputs()
+        except Exception as e:
+            print e
+
+        print "Sleeping for {}m".format(MINUTES_SLEEP)
+        time.sleep(SECONDS_SLEEP)
